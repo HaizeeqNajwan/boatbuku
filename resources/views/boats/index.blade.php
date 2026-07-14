@@ -2,46 +2,14 @@
     <x-slot name="header">
         <div class="page-header-row">
             <div>
-                <h2>{{ auth()->user()->isOwner() ? 'Dashboard' : 'Dashboard' }}</h2>
-                <p>{{ auth()->user()->isOwner() ? 'Manage your fleet and bookings' : 'Browse and book boats' }}</p>
+                <h2>Browse boats</h2>
+                <p>Find the perfect vessel for your fishing trip</p>
             </div>
-            @if(auth()->user()->isOwner())
-                <a href="{{ route('owner.boats.create') }}" class="btn btn-primary btn-sm">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                    Add Boat
-                </a>
-            @endif
         </div>
     </x-slot>
 
-    @if(auth()->user()->isOwner())
-        @php
-            $totalBoats = auth()->user()->boats()->where('status', 'active')->count();
-            $totalBookings = auth()->user()->boats()->with('bookings')->get()->pluck('bookings')->flatten()->count();
-            $pendingBookings = auth()->user()->boats()->with('bookings')->get()->pluck('bookings')->flatten()->where('status', 'pending')->count();
-        @endphp
-        <div class="grid-4" style="margin-bottom: 32px;">
-            <div class="stat">
-                <div class="stat-value">{{ $totalBoats }}</div>
-                <div class="stat-label">Active Boats</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">{{ $totalBookings }}</div>
-                <div class="stat-label">Total Bookings</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value" style="color: var(--yellow);">{{ $pendingBookings }}</div>
-                <div class="stat-label">Pending</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value" style="color: var(--green);">{{ $totalBookings - $pendingBookings }}</div>
-                <div class="stat-label">Processed</div>
-            </div>
-        </div>
-    @endif
-
-    {{-- Search --}}
-    <form method="GET" action="{{ route('dashboard') }}" style="margin-bottom: 24px;">
+    {{-- Search and filters --}}
+    <form method="GET" action="{{ route('boats.index') }}" style="margin-bottom: 24px;">
         <div style="display: flex; gap: 12px; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
                 <input type="text" name="search" value="{{ request()->search }}" placeholder="Search boats..." class="input">
@@ -54,7 +22,7 @@
             </select>
             <button type="submit" class="btn btn-primary btn-sm">Search</button>
             @if(request()->hasAny(['search', 'location']))
-                <a href="{{ route('dashboard') }}" class="btn btn-secondary btn-sm">Clear</a>
+                <a href="{{ route('boats.index') }}" class="btn btn-secondary btn-sm">Clear</a>
             @endif
         </div>
     </form>
@@ -68,23 +36,25 @@
                     $reviewCount = $boat->reviews_count ?? 0;
                 @endphp
                 <div class="card">
-                    {{-- Boat image area --}}
+                    {{-- Image area --}}
                     <div style="height: 160px; display: flex; align-items: center; justify-content: center; position: relative; background: var(--bg-elevated); border-bottom: 1px solid var(--border);">
                         <span style="font-size: 48px; font-weight: 600; color: rgba(6, 182, 212, 0.12); font-family: 'Inter', sans-serif;">{{ strtoupper(substr($boat->name, 0, 1)) }}</span>
                         <span style="position: absolute; top: 12px; left: 12px; font-size: 11px; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px; letter-spacing: 0.02em;">{{ $boat->location ?? '—' }}</span>
                     </div>
+
+                    {{-- Card body --}}
                     <div style="padding: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
-                            <div>
-                                <h3 style="font-size: 15px; font-weight: 600; margin: 0;">{{ $boat->name }}</h3>
-                                <p style="font-size: 13px; color: var(--text-muted); margin: 2px 0 0;">{{ $boat->type }} &middot; {{ $boat->capacity }} pax</p>
-                            </div>
-                        </div>
+                        <h3 style="font-size: 15px; font-weight: 600; margin: 0;">{{ $boat->name }}</h3>
+                        <p style="font-size: 13px; color: var(--text-muted); margin: 2px 0 0;">{{ ucfirst($boat->type) }} &middot; {{ $boat->capacity }} pax</p>
+
+                        @if($boat->description)
+                            <p style="font-size: 13px; color: var(--text-muted); margin: 8px 0 0; line-height: 1.4;">{{ Str::limit($boat->description, 90) }}</p>
+                        @endif
 
                         {{-- Rating --}}
-                        <div style="display: flex; align-items: center; gap: 4px; margin-top: 8px;">
+                        <div style="display: flex; align-items: center; gap: 4px; margin-top: 10px;">
                             @for($i = 1; $i <= 5; $i++)
-                                <svg width="14" height="14" viewBox="0 0 20 20" fill="{{ $i <= $rating ? '#f59e0b' : '#334155' }}"><path d="M10 1.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.6-4.1 6.1-.6z"/></svg>
+                                <svg width="13" height="13" viewBox="0 0 20 20" fill="{{ $i <= $rating ? '#f59e0b' : '#334155' }}"><path d="M10 1.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.6-4.1 6.1-.6z"/></svg>
                             @endfor
                             <span style="font-size: 12px; color: var(--text-muted); margin-left: 4px;">
                                 {{ $rating > 0 ? number_format($boat->reviews_avg_rating, 1) : 'New' }}{{ $reviewCount ? " ({$reviewCount})" : '' }}
@@ -109,6 +79,11 @@
                     </div>
                 </div>
             @endforeach
+        </div>
+
+        {{-- Pagination --}}
+        <div style="margin-top: 24px; display: flex; justify-content: center;">
+            {{ $boats->links() }}
         </div>
     @else
         <div class="card" style="text-align: center; padding: 64px 24px;">

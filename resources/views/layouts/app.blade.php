@@ -1,272 +1,280 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>{{ config('app.name', 'Laravel') }}</title>
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ config('app.name', 'Boatbuku') }}</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --bg-elevated: #111827;
+            --bg-card: #151b2b;
+            --border: #1e293b;
+            --border-hover: #334155;
+            --text: #f1f5f9;
+            --text-muted: #64748b;
+            --accent: #06b6d4;
+            --accent-hover: #22d3ee;
+            --green: #10b981;
+            --green-bg: rgba(16, 185, 129, 0.1);
+            --yellow: #f59e0b;
+            --yellow-bg: rgba(245, 158, 11, 0.1);
+            --red: #ef4444;
+            --red-bg: rgba(239, 68, 68, 0.1);
+            --radius: 12px;
+        }
 
-        <style>
-            :root {
-                --abyss: #070C13;
-                --panel: #0D1620;
-                --panel-2: #111C28;
-                --edge: #223244;
-                --cyan: #4FD8E0;
-                --cyan-dim: #1F5A5E;
-                --cyan-glow: rgba(79,216,224,0.35);
-                --brass: #C9A16A;
-                --brass-dim: #8A6E45;
-                --foam: #D8ECEF;
-                --mist: #9FB4C4;
-                --mist-dim: #5C7286;
-                --text: #E7F0F4;
-            }
+        * { -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
 
-            /* Dark shell throughout — no light gray/white ever shows through,
-               regardless of page height, overscroll, or whether a header slot is used. */
-            html, body { background: var(--abyss); }
-            body { font-family: 'Inter', 'Figtree', system-ui, sans-serif; color: var(--text); }
+        /* Layout */
+        .page-container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
 
-            /* ===== Navbar shell ===== */
-            .hud-nav {
-                background: rgba(13,22,32,0.94);
-                backdrop-filter: blur(10px);
-                position: sticky; top: 0; z-index: 40;
-                border-bottom: 1px solid var(--edge);
-            }
+        /* Navbar */
+        .nav {
+            position: sticky; top: 0; z-index: 50;
+            border-bottom: 1px solid var(--border);
+            background: rgba(11, 15, 25, 0.9);
+            backdrop-filter: blur(12px);
+        }
+        .nav-inner { max-width: 1120px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-logo-text { font-weight: 600; font-size: 16px; color: var(--text); letter-spacing: -0.02em; }
+        .nav-links { display: flex; gap: 4px; align-items: center; }
+        .nav-link {
+            padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 500;
+            color: var(--text-muted); text-decoration: none; transition: all 0.15s;
+        }
+        .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+        .nav-link.active { color: var(--accent); background: rgba(6, 182, 212, 0.08); }
 
-            /* Waterline: the navbar's edge is drawn as a wave, not a flat rule */
-            .waterline {
-                position: absolute; left: 0; right: 0; bottom: -7px; height: 8px;
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='8' viewBox='0 0 60 8'%3E%3Cpath d='M0 4 Q 7.5 0 15 4 T 30 4 T 45 4 T 60 4' fill='none' stroke='%234FD8E0' stroke-width='1' opacity='0.55'/%3E%3C/svg%3E");
-                background-repeat: repeat-x;
-                background-size: 60px 8px;
-                pointer-events: none;
-            }
-            @media (prefers-reduced-motion: no-preference) {
-                .waterline { animation: drift 9s linear infinite; }
-            }
-            @keyframes drift { from { background-position-x: 0; } to { background-position-x: 60px; } }
+        /* User menu */
+        .user-menu { position: relative; }
+        .user-btn {
+            display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px;
+            border-radius: 999px; border: none; background: transparent; cursor: pointer;
+            transition: background 0.15s;
+        }
+        .user-btn:hover { background: rgba(255,255,255,0.04); }
+        .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--accent); color: #000; font-weight: 600; font-size: 13px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .user-name { font-size: 14px; font-weight: 500; color: var(--text); }
+        .user-dropdown {
+            position: absolute; right: 0; top: 100%; margin-top: 8px;
+            width: 220px; border-radius: var(--radius);
+            border: 1px solid var(--border); background: var(--bg-elevated);
+            overflow: hidden; z-index: 100;
+        }
+        .user-dropdown-header { padding: 16px; border-bottom: 1px solid var(--border); }
+        .user-dropdown-name { font-size: 14px; font-weight: 600; }
+        .user-dropdown-email { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .user-dropdown-role { font-size: 11px; color: var(--accent); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+        .user-dropdown a, .user-dropdown form button {
+            display: block; width: 100%; text-align: left; padding: 10px 16px;
+            font-size: 14px; border: none; background: none; cursor: pointer;
+            color: var(--text-muted); transition: all 0.15s;
+        }
+        .user-dropdown a:hover, .user-dropdown form button:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+        .user-dropdown form button { color: var(--red); }
 
-            .hud-nav-wrap { position: relative; }
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 20px; border-radius: var(--radius); font-size: 14px; font-weight: 500;
+            border: none; cursor: pointer; transition: all 0.15s; text-decoration: none;
+        }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--border-hover); color: var(--text); background: rgba(255,255,255,0.02); }
+        .btn-sm { padding: 6px 12px; font-size: 13px; }
+        .btn-xs { padding: 4px 10px; font-size: 12px; border-radius: 8px; }
 
-            /* ===== Binnacle compass logo mount ===== */
-            .compass-mount { position: relative; width: 3rem; height: 3rem; flex-shrink: 0; }
-            .compass-ring { position: absolute; inset: -7px; color: var(--brass); }
-            @media (prefers-reduced-motion: no-preference) {
-                .compass-ring { animation: compass-spin 100s linear infinite; }
-            }
-            @keyframes compass-spin { to { transform: rotate(360deg); } }
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            transition: border-color 0.15s;
+        }
+        .card:hover { border-color: var(--border-hover); }
 
-            .hud-logo-mark {
-                position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
-                border: 1.5px solid var(--brass-dim);
-                box-shadow: inset 0 0 0 2px var(--abyss), 0 0 0 1px rgba(201,161,106,0.25);
-                background: var(--panel-2);
-            }
-            .hud-logo-mark img { width: 100%; height: 100%; object-fit: cover; }
-            .hud-logo-mark::after {
-                content: ""; position: absolute; inset: 0; border-radius: 50%;
-                background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.22), transparent 55%);
-                pointer-events: none;
-            }
+        /* Inputs */
+        .input {
+            width: 100%; padding: 10px 14px; border-radius: var(--radius);
+            border: 1px solid var(--border); background: var(--bg-elevated);
+            color: var(--text); font-size: 14px; font-family: inherit;
+            transition: all 0.15s; outline: none;
+        }
+        .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1); }
+        .input::placeholder { color: var(--text-muted); }
+        .input-sm { padding: 8px 12px; font-size: 13px; }
 
-            .hud-brand-text { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.05rem; color: var(--text); line-height: 1; letter-spacing: 0.01em; }
-            .hud-brand-sub {
-                font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em;
-                text-transform: uppercase; color: var(--brass);
-            }
+        /* Labels */
+        .label { font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; display: block; }
 
-            /* ===== Nav tabs ===== */
-            .hud-navlink {
-                position: relative;
-                font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
-                color: var(--mist); padding: 0.6rem 1rem 0.7rem; border-radius: 0.35rem;
-                display: flex; align-items: center; gap: 0.55rem; transition: color 0.15s ease, background 0.15s ease;
-            }
-            .hud-navlink::before {
-                content: ""; width: 5px; height: 5px; border-radius: 50%;
-                background: var(--brass-dim); flex-shrink: 0; transition: all 0.15s ease;
-            }
-            .hud-navlink:hover { color: var(--text); background: rgba(201,161,106,0.06); }
-            .hud-navlink:hover::before { background: var(--brass); }
-            .hud-navlink.is-active { color: var(--foam); }
-            .hud-navlink.is-active::before { background: var(--cyan); box-shadow: 0 0 6px var(--cyan-glow); }
-            .hud-navlink.is-active::after {
-                content: ""; position: absolute; left: 0.7rem; right: 0.7rem; bottom: 3px; height: 2px;
-                background: linear-gradient(90deg, var(--cyan), var(--foam));
-                border-radius: 2px; box-shadow: 0 0 6px var(--cyan-glow);
-            }
+        /* Status badges */
+        .badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 500;
+        }
+        .badge-green { background: var(--green-bg); color: var(--green); }
+        .badge-yellow { background: var(--yellow-bg); color: var(--yellow); }
+        .badge-red { background: var(--red-bg); color: var(--red); }
+        .badge-gray { background: rgba(255,255,255,0.04); color: var(--text-muted); }
 
-            /* ===== Vessel call-sign badge ===== */
-            .callsign {
-                font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em;
-                color: var(--brass); border: 1px solid var(--brass-dim); border-radius: 0.3rem;
-                padding: 0.2rem 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem;
-            }
-            .callsign .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 5px var(--cyan-glow); }
-            @media (prefers-reduced-motion: no-preference) {
-                .callsign .dot { animation: pulse-op 1.8s ease-in-out infinite; }
-            }
-            @keyframes pulse-op { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+        /* Stats */
+        .stat {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px;
+        }
+        .stat-value { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; }
+        .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-            .hud-clock { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--mist-dim); letter-spacing: 0.04em; }
+        /* Tables */
+        .table { width: 100%; border-collapse: collapse; }
+        .table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+        .table td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
+        .table tr:last-child td { border-bottom: none; }
+        .table tr:hover td { background: rgba(255,255,255,0.01); }
 
-            /* ===== Porthole avatar ===== */
-            .porthole {
-                width: 2.2rem; height: 2.2rem; border-radius: 50%;
-                background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.15), rgba(79,216,224,0.05) 60%);
-                border: 1.5px solid var(--brass-dim);
-                box-shadow: inset 0 0 0 2px var(--abyss);
-                display: flex; align-items: center; justify-content: center;
-                font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.72rem; color: var(--cyan);
-            }
+        /* Typography */
+        .heading-xl { font-size: 40px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
+        .heading-lg { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+        .heading-md { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+        .heading-sm { font-size: 16px; font-weight: 600; }
 
-            .hud-dropdown {
-                background: var(--panel); border: 1px solid var(--edge); border-radius: 0.6rem;
-                box-shadow: 0 12px 32px rgba(0,0,0,0.5);
-            }
-            .hud-dropdown-item {
-                font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;
-                color: var(--mist); padding: 0.65rem 1rem; display: flex; align-items: center; gap: 0.6rem;
-                transition: all 0.15s ease;
-            }
-            .hud-dropdown-item:hover { color: var(--cyan); background: rgba(79,216,224,0.06); }
+        /* Section */
+        .section { padding: 40px 0; }
 
-            .hud-mobile-btn {
-                width: 2.3rem; height: 2.3rem; border-radius: 0.4rem; border: 1px solid var(--edge);
-                display: flex; align-items: center; justify-content: center; color: var(--mist);
-            }
-            .hud-mobile-btn:focus-visible,
-            .hud-navlink:focus-visible,
-            .hud-dropdown-item:focus-visible {
-                outline: 2px solid var(--cyan); outline-offset: 2px;
-            }
+        /* Grid */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
 
-            /* ===== Page header (only renders on pages that pass an x-slot header) =====
-               Styled to sit flush with the dark theme instead of a white bar. */
-            .hud-page-header {
-                background: var(--panel);
-                border-bottom: 1px solid var(--edge);
-            }
-        </style>
-    </head>
-    <body class="font-sans antialiased" x-data="{ mobileOpen: false, userOpen: false }">
-        <div class="min-h-screen" style="background: var(--abyss);">
+        /* Error / Session */
+        .error-text { color: var(--red); font-size: 12px; margin-top: 4px; display: block; }
+        .session-success { background: var(--green-bg); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.2); padding: 10px 14px; border-radius: var(--radius); font-size: 13px; }
+        .session-error { background: var(--red-bg); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px 14px; border-radius: var(--radius); font-size: 13px; }
 
-            {{-- ===== Navbar: ship's instrument rail ===== --}}
-            <nav class="hud-nav">
-                <div class="hud-nav-wrap">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="flex justify-between h-16 items-center">
+        /* Mobile menu */
+        .mobile-menu { display: none; }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu { display: block; }
+            .grid-3 { grid-template-columns: 1fr; }
+        }
 
-                            <div class="flex items-center gap-5">
-                                <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-                                    <span class="compass-mount">
-                                        <svg class="compass-ring" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="1" opacity="0.45"/>
-                                            <path d="M32 2 L34.5 9 L29.5 9 Z" fill="currentColor" opacity="0.9"/>
-                                            <line x1="32" y1="6" x2="32" y2="11" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-                                            <line x1="32" y1="53" x2="32" y2="58" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-                                            <line x1="6" y1="32" x2="11" y2="32" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-                                            <line x1="53" y1="32" x2="58" y2="32" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-                                            <line x1="12.7" y1="12.7" x2="16" y2="16" stroke="currentColor" stroke-width="0.75" opacity="0.4"/>
-                                            <line x1="48" y1="16" x2="51.3" y2="12.7" stroke="currentColor" stroke-width="0.75" opacity="0.4"/>
-                                            <line x1="12.7" y1="51.3" x2="16" y2="48" stroke="currentColor" stroke-width="0.75" opacity="0.4"/>
-                                            <line x1="48" y1="48" x2="51.3" y2="51.3" stroke="currentColor" stroke-width="0.75" opacity="0.4"/>
-                                        </svg>
-                                        <span class="hud-logo-mark">
-                                            <img src="{{ asset('Boat.jpg') }}" alt="Boatbuku">
-                                        </span>
-                                    </span>
-                                    <span class="hidden sm:block">
-                                        <span class="hud-brand-text block">Boatbuku</span>
-                                        <span class="hud-brand-sub block">Fleet &amp; Charter Desk</span>
-                                    </span>
-                                </a>
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-                                <div class="hidden md:flex items-center gap-1 ml-3">
-                                    <a href="{{ route('dashboard') }}" class="hud-navlink {{ request()->routeIs('dashboard') ? 'is-active' : '' }}">Dashboard</a>
-                                    <a href="{{ route('owner.boats.index') }}" class="hud-navlink {{ request()->routeIs('owner.boats.*') ? 'is-active' : '' }}">My Boats</a>
-                                </div>
-                            </div>
+        /* Page header */
+        .page-header { padding: 32px 0 24px; border-bottom: 1px solid var(--border); }
+        .page-header-inner { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        .page-header h2 { font-size: 20px; font-weight: 600; margin: 0; }
+        .page-header p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+        .page-header-actions { display: flex; gap: 8px; align-items: flex-start; }
+        .page-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
 
-                            <div class="flex items-center gap-3">
-                                <span class="callsign hidden lg:inline-flex">
-                                    <span class="dot"></span>
-                                    OWNER
-                                </span>
-                                <span class="hud-clock hidden lg:inline" id="nav-clock">{{ now()->format('H:i:s') }}</span>
-
-                                <div class="relative" @click.outside="userOpen = false">
-                                    <button @click="userOpen = !userOpen" class="flex items-center gap-2" aria-label="Account menu">
-                                        <span class="porthole">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</span>
-                                        <svg class="w-3.5 h-3.5 hidden sm:block text-[color:var(--mist-dim)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                                    </button>
-
-                                    <div x-show="userOpen" x-transition x-cloak class="hud-dropdown absolute right-0 mt-3 w-52 py-1.5 z-50">
-                                        <div class="px-4 py-2.5 border-b" style="border-color: var(--edge);">
-                                            <p class="text-sm font-medium text-[color:var(--text)] truncate">{{ auth()->user()->name }}</p>
-                                            <p class="font-mono text-[0.65rem] text-[color:var(--mist-dim)] truncate">{{ auth()->user()->email }}</p>
-                                        </div>
-                                        <a href="{{ route('profile.edit') }}" class="hud-dropdown-item">Profile</a>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <button type="submit" class="hud-dropdown-item w-full text-left" style="color: #FF6B6B;">Sign Out</button>
-                                        </form>
-                                    </div>
-                                </div>
-
-                                <button @click="mobileOpen = !mobileOpen" class="hud-mobile-btn md:hidden" aria-label="Toggle menu">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" x-show="!mobileOpen"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" x-show="mobileOpen" x-cloak><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                                </button>
-                            </div>
-                        </div>
+        /* Footer */
+        .footer { border-top: 1px solid var(--border); padding: 24px 0; margin-top: auto; }
+        .footer-inner { max-width: 1120px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+        .footer-text { font-size: 13px; color: var(--text-muted); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col" x-data="{ userOpen: false }">
+    {{-- Navbar --}}
+    <nav class="nav">
+        <div class="nav-inner">
+            <div style="display: flex; align-items: center; gap: 32px;">
+                <a href="{{ route('dashboard') }}" class="nav-logo">
+                    <div class="nav-logo-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #000;">
+                            <path d="M2 20l1.5-3L7 12l3.5 5L12 20l1.5-3L17 12l3.5 5L22 20"/>
+                            <path d="M12 3L2 12h3v8h6v-5h2v5h6v-8h3L12 3z"/>
+                        </svg>
                     </div>
-
-                    <div x-show="mobileOpen" x-transition x-cloak class="md:hidden">
-                        <div class="px-4 py-3 space-y-1 border-t" style="border-color: var(--edge);">
-                            <a href="{{ route('dashboard') }}" class="hud-navlink {{ request()->routeIs('dashboard') ? 'is-active' : '' }} justify-start">Dashboard</a>
-                            <a href="{{ route('owner.boats.index') }}" class="hud-navlink {{ request()->routeIs('owner.boats.*') ? 'is-active' : '' }} justify-start">My Boats</a>
-                            <a href="{{ route('owner.boats.create') }}" class="hud-navlink {{ request()->routeIs('owner.boats.create') ? 'is-active' : '' }} justify-start">Add Boat</a>
-                        </div>
-                    </div>
-
-                    <div class="waterline" aria-hidden="true"></div>
+                    <span class="nav-logo-text">Boatbuku</span>
+                </a>
+                <div class="nav-links">
+                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+                    @if(auth()->user()->isOwner())
+                        <a href="{{ route('owner.boats.index') }}" class="nav-link {{ request()->routeIs('owner.boats.*') ? 'active' : '' }}">Fleet</a>
+                        <a href="{{ route('owner.bookings') }}" class="nav-link {{ request()->routeIs('owner.bookings') || request()->routeIs('owner.dashboard') ? 'active' : '' }}">Bookings</a>
+                    @endif
                 </div>
-            </nav>
-
-            {{-- Page Heading — only renders if a page passes <x-slot name="header">, now styled to match the dark theme instead of a white bar --}}
-            @isset($header)
-                <header class="hud-page-header">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="user-menu">
+                    <button @click="userOpen = !userOpen" class="user-btn">
+                        <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                        <span class="user-name">{{ auth()->user()->name }}</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted);"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div class="user-dropdown" x-show="userOpen" x-cloak @click.outside="userOpen = false" @keydown.escape="userOpen = false">
+                        <div class="user-dropdown-header">
+                            <div class="user-dropdown-name">{{ auth()->user()->name }}</div>
+                            <div class="user-dropdown-email">{{ auth()->user()->email }}</div>
+                            <div class="user-dropdown-role">{{ auth()->user()->isOwner() ? 'Owner' : 'Customer' }}</div>
+                        </div>
+                        <a href="{{ route('profile.edit') }}">Settings</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit">Sign Out</button>
+                        </form>
                     </div>
-                </header>
-            @endisset
-
-            {{-- Page Content --}}
-            <main>
-                {{ $slot }}
-            </main>
+                </div>
+            </div>
         </div>
+    </nav>
 
-        <script>
-            function updateNavClock() {
-                const el = document.getElementById('nav-clock');
-                if (el) el.textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
-            }
-            updateNavClock();
-            setInterval(updateNavClock, 1000);
-        </script>
-    </body>
+    {{-- Page Header --}}
+    @isset($header)
+        <div class="page-header">
+            <div class="page-header-inner">
+                {{ $header }}
+            </div>
+        </div>
+    @endisset
+
+    {{-- Content --}}
+    <main class="flex-1">
+        <div class="page-container" style="padding-top: 32px; padding-bottom: 32px;">
+            {{ $slot }}
+        </div>
+    </main>
+
+    {{-- Footer --}}
+    <footer class="footer">
+        <div class="footer-inner">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="nav-logo-icon" style="width: 24px; height: 24px; border-radius: 6px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #000;">
+                        <path d="M2 20l1.5-3L7 12l3.5 5L12 20l1.5-3L17 12l3.5 5L22 20"/>
+                    </svg>
+                </div>
+                <span class="footer-text" style="font-weight: 600; color: var(--text);">Boatbuku</span>
+            </div>
+            <p class="footer-text">2025 Boatbuku. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
 </html>

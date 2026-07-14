@@ -1,55 +1,30 @@
-<section class="space-y-6">
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Delete Account') }}
-        </h2>
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+    <div>
+        <p style="font-size: 14px; font-weight: 500; color: var(--red); margin: 0 0 4px;">Delete Account</p>
+        <p style="font-size: 13px; color: var(--text-muted); margin: 0; max-width: 400px;">Once your account is deleted, all of its resources and data will be permanently deleted.</p>
+    </div>
+    <button type="button" onclick="document.getElementById('delete-modal').showModal()" class="btn btn-secondary" style="color: var(--red); border-color: rgba(239, 68, 68, 0.3);">Delete Account</button>
+</div>
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
-        </p>
-    </header>
+<dialog id="delete-modal" style="width: 100%; max-width: 400px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text); padding: 0; margin: auto;">
+    <div style="padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Are you sure?</h3>
+        <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 20px;">Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm.</p>
 
-    <x-danger-button
-        x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
-
-    <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-        <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
+        <form method="POST" action="{{ route('profile.destroy') }}">
             @csrf
-            @method('delete')
+            @method('DELETE')
 
-            <h2 class="text-lg font-medium text-gray-900">
-                {{ __('Are you sure you want to delete your account?') }}
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-600">
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
-            </p>
-
-            <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
-
-                <x-text-input
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
-                />
-
-                <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
+            <div style="margin-bottom: 16px;">
+                <label class="label" for="password">Password</label>
+                <input type="password" id="password" name="password" required class="input" placeholder="••••••••">
+                @error('password') <span class="error-text">{{ $message }}</span> @enderror
             </div>
 
-            <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
-                </x-secondary-button>
-
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
-                </x-danger-button>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-primary" style="background: var(--red); color: #fff;">Delete Account</button>
+                <button type="button" onclick="document.getElementById('delete-modal').close()" class="btn btn-secondary">Cancel</button>
             </div>
         </form>
-    </x-modal>
-</section>
+    </div>
+</dialog>

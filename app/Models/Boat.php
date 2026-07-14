@@ -6,11 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Boat extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         "name",
         "type",
@@ -19,6 +14,7 @@ class Boat extends Model
         "price_per_hour",
         "price_per_trip",
         "location",
+        "status",
     ];
 
     public function owner()
@@ -35,6 +31,7 @@ class Boat extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
